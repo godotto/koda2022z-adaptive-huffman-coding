@@ -1,0 +1,10 @@
+# Python virtual environment
+lib/
+lib64
+bin/
+pyvenv.cfg
+include/
+share/
+
+# Visual Studio Code configs
+.vscode/
