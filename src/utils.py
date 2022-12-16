@@ -42,16 +42,33 @@ def update(root: Node, symbol, first_apperance):
     while True:
         if first_apperance:
             current_node = find_node_symbol(root, NYT)
+
+            # Add new symbol to the right of current node
             current_node.right = Node(1, symbol)
+            current_node.right.parent = current_node
+
+            # Set let node to NYT
             current_node.left = Node(0, NYT)
+            current_node.left.parent = current_node
+
+            # Update current node
             current_node.weight += 1
             current_node.symbol = None
-            current_node.left.parent = current_node
         else:
             if not current_node:
                 current_node = find_node_symbol(root, symbol)
+            # find node that has the same weight and is not current node or its parent
+            node_to_replace = find_node_weight(root, current_node.weight)
+            if node_to_replace not in (current_node, current_node.parent):
+                switch_nodes(current_node, node_to_replace)
+                current_node = node_to_replace
 
-    return
+            current_node.weight += 1
+
+        if not current_node.parent:
+            break
+        current_node = current_node.parent
+        first_apperance = False
 
 
 def find_node_symbol(root: Node, symbol) -> Node:
@@ -59,18 +76,17 @@ def find_node_symbol(root: Node, symbol) -> Node:
     if root.symbol == symbol:
         return root
 
-    if root.left != None:
+    if not root.left:
         node = find_node_symbol(root.left, symbol)
-        if node != None:
+        if not node:
             return node
 
-    if root.right != None:
+    if not root.right:
         node = find_node_symbol(root.right, symbol)
-        if node != None:
+        if not node:
             return node
 
     return None
-# te funkcje można połączyć w jedno ^v
 
 
 def find_node_weight(root: Node, weight) -> Node:
@@ -78,14 +94,14 @@ def find_node_weight(root: Node, weight) -> Node:
     if root.weight == weight:
         return root
 
-    if root.left != None:
+    if not root.left:
         node = find_node_weight(root.left, weight)
-        if node != None:
+        if not node:
             return node
 
-    if root.right != None:
+    if not root.right:
         node = find_node_weight(root.right, weight)
-        if node != None:
+        if not node:
             return node
 
     return None

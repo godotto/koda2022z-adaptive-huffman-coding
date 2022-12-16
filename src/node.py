@@ -6,4 +6,4 @@ class Node:
 
         self.symbol = symbol
         self.weight = weight
-        self.code = "" # for printing purpose
+        self.code = ""  # for printing purpose
