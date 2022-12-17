@@ -18,12 +18,11 @@ class AdaptiveHuffmanEncoderDecoder:
     def encode(self):
         code = ""
         for i in range(len(self.input_data)):
-            symbol_code, first_appearance = utils.print_code(self.root, self.input_data[i])
+            symbol_code, first_appearance = utils.print_code(
+                self.root, self.input_data[i])
             print(symbol_code + " ")
             code += symbol_code
             utils.update(self.root, self.input_data[i], first_appearance)
         utils.add_padding(code)
         byte_array = utils.convert_to_bytes(code)
         utils.write_to_file(byte_array)
-
-

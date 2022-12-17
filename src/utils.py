@@ -12,6 +12,9 @@ def switch_nodes(left_node: Node, right_node: Node):
     # switch references to the right node
     left_node.right, right_node.right = right_node.right, left_node.right
 
+    # switch references to the parent node (if needed)
+    left_node.parent, right_node.parent = right_node.parent, left_node.parent
+
     # switch contained symbols
     left_node.symbol, right_node.symbol = left_node.symbol, right_node.symbol
 
@@ -60,9 +63,9 @@ def update(root: Node, symbol, first_apperance):
         else:
             if not current_node:
                 current_node = find_node_symbol(root, symbol)
-            # find node that has the same weight and is not current node or its parent
-            node_to_replace = find_node_weight(root, current_node.weight)
-            if node_to_replace not in (current_node, current_node.parent):
+            # find node that has the same weight and is not current node or its child
+            node_to_replace = find_node_to_swap(root, current_node)
+            if node_to_replace is not current_node.parent:
                 switch_nodes(current_node, node_to_replace)
                 current_node = node_to_replace
 
@@ -73,7 +76,7 @@ def update(root: Node, symbol, first_apperance):
         current_node = current_node.parent
         first_apperance = False
         counter += 1
-        #print(str(counter) + " ")
+        # print(str(counter) + " ")
 
 
 def find_node_symbol(root: Node, symbol) -> Node:
@@ -93,22 +96,25 @@ def find_node_symbol(root: Node, symbol) -> Node:
     return None
 
 
-def find_node_weight(root: Node, weight) -> Node:
-    if root.weight == weight:
-        return root
+def find_node_to_swap(root: Node, node_to_swap: Node) -> Node:
+    if root.weight == node_to_swap.weight:
+        if root is node_to_swap or root.parent is node_to_swap:
+            return None
+        else:
+            return root
 
     if root.left:
-        node = find_node_weight(root.left, weight)
+        node = find_node_to_swap(root.left, node_to_swap)
         if node:
             return node
 
     if root.right:
-        node = find_node_weight(root.right, weight)
+        node = find_node_to_swap(root.right, node_to_swap)
         if node:
             return node
 
-
     return None
+
 
 def add_padding(code: str):
     padding_len = 8 - len(code) % 8
@@ -117,6 +123,7 @@ def add_padding(code: str):
     code += zero_s
     code = str(padding_len) + code
 
+
 def convert_to_bytes(code: str):
     byte_array = bytearray()
     for i in range(0, len(code), 8):
@@ -124,13 +131,14 @@ def convert_to_bytes(code: str):
         byte_array.append(int(byte, 2))
     return byte_array
 
+
 def write_to_file(byte_array: bytearray):
     with open("my_binary_file.bin", "wb") as binary_file:
         # Write bytes to file
         binary_file.write(byte_array)
 
+
 def read_from_file(filename: str):
     with open(filename, "rb") as binary_file:
         byte_array = binary_file.read()
     return byte_array
-
