@@ -5,7 +5,10 @@ bin/
 pyvenv.cfg
 include/
 share/
+
+#PyCharm
 .idea/
+src/__pycache__/
 
 # Visual Studio Code configs
 .vscode/
