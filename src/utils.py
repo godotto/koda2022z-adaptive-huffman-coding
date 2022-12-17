@@ -76,14 +76,14 @@ def find_node_symbol(root: Node, symbol) -> Node:
     if root.symbol == symbol:
         return root
 
-    if not root.left:
-        node = find_node_symbol(root.left, symbol)
-        if not node:
+    if root.right:
+        node = find_node_symbol(root.right, symbol)
+        if node:
             return node
 
-    if not root.right:
-        node = find_node_symbol(root.right, symbol)
-        if not node:
+    if root.left:
+        node = find_node_symbol(root.left, symbol)
+        if node:
             return node
 
     return None
@@ -94,14 +94,14 @@ def find_node_weight(root: Node, weight) -> Node:
     if root.weight == weight:
         return root
 
-    if not root.left:
-        node = find_node_weight(root.left, weight)
-        if not node:
+    if root.right:
+        node = find_node_weight(root.right, weight)
+        if node:
             return node
 
-    if not root.right:
-        node = find_node_weight(root.right, weight)
-        if not node:
+    if root.left:
+        node = find_node_weight(root.left, weight)
+        if node:
             return node
 
     return None

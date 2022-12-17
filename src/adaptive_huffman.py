@@ -1,4 +1,5 @@
 import node
+import utils
 
 NYT = "NYT"
 
@@ -12,3 +13,11 @@ class AdaptiveHuffmanEncoderDecoder:
         self.r = alphabet_size - 2 ** self.e
 
         self.root = node.Node(0, NYT)
+
+    def encode(self):
+        code = []
+        for symbol in self.input_data:
+            symbol_code, first_appearance = utils.print_code(self.root, symbol)
+            code += symbol_code
+            utils.update(self.root, symbol, first_appearance)
+        return code
