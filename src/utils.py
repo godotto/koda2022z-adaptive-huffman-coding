@@ -1,3 +1,5 @@
+import numpy
+
 from node import Node
 
 NYT = "NYT"
@@ -38,7 +40,8 @@ def print_code(root: Node, symbol):
 
 
 def update(root: Node, symbol, first_apperance):
-    current_node = None
+    current_node: Node = None
+    counter = 0
     while True:
         if first_apperance:
             current_node = find_node_symbol(root, NYT)
@@ -53,7 +56,7 @@ def update(root: Node, symbol, first_apperance):
 
             # Update current node
             current_node.weight += 1
-            current_node.symbol = None
+            current_node.symbol = ""
         else:
             if not current_node:
                 current_node = find_node_symbol(root, symbol)
@@ -69,20 +72,21 @@ def update(root: Node, symbol, first_apperance):
             break
         current_node = current_node.parent
         first_apperance = False
+        counter += 1
+        #print(str(counter) + " ")
 
 
 def find_node_symbol(root: Node, symbol) -> Node:
-
     if root.symbol == symbol:
         return root
 
-    if root.right:
-        node = find_node_symbol(root.right, symbol)
+    if root.left:
+        node = find_node_symbol(root.left, symbol)
         if node:
             return node
 
-    if root.left:
-        node = find_node_symbol(root.left, symbol)
+    if root.right:
+        node = find_node_symbol(root.right, symbol)
         if node:
             return node
 
@@ -90,18 +94,43 @@ def find_node_symbol(root: Node, symbol) -> Node:
 
 
 def find_node_weight(root: Node, weight) -> Node:
-
     if root.weight == weight:
         return root
-
-    if root.right:
-        node = find_node_weight(root.right, weight)
-        if node:
-            return node
 
     if root.left:
         node = find_node_weight(root.left, weight)
         if node:
             return node
 
+    if root.right:
+        node = find_node_weight(root.right, weight)
+        if node:
+            return node
+
+
     return None
+
+def add_padding(code: str):
+    padding_len = 8 - len(code) % 8
+    zeros = numpy.zeros(padding_len, dtype=int)
+    zero_s = numpy.array2string(zeros)
+    code += zero_s
+    code = str(padding_len) + code
+
+def convert_to_bytes(code: str):
+    byte_array = bytearray()
+    for i in range(0, len(code), 8):
+        byte = code[1:1 + 8]
+        byte_array.append(int(byte, 2))
+    return byte_array
+
+def write_to_file(byte_array: bytearray):
+    with open("my_binary_file.bin", "wb") as binary_file:
+        # Write bytes to file
+        binary_file.write(byte_array)
+
+def read_from_file(filename: str):
+    with open(filename, "rb") as binary_file:
+        byte_array = binary_file.read()
+    return byte_array
+

@@ -1,11 +1,12 @@
 import node
 import utils
 
+
 NYT = "NYT"
 
 
 class AdaptiveHuffmanEncoderDecoder:
-    def __init__(self, input_data: bytes, alphabet_size: int):
+    def __init__(self, input_data: bytearray, alphabet_size: int):
         self.input_data = input_data
         self.alphabet_size = alphabet_size
 
@@ -15,9 +16,14 @@ class AdaptiveHuffmanEncoderDecoder:
         self.root = node.Node(0, NYT)
 
     def encode(self):
-        code = []
-        for symbol in self.input_data:
-            symbol_code, first_appearance = utils.print_code(self.root, symbol)
+        code = ""
+        for i in range(len(self.input_data)):
+            symbol_code, first_appearance = utils.print_code(self.root, self.input_data[i])
+            print(symbol_code + " ")
             code += symbol_code
-            utils.update(self.root, symbol, first_appearance)
-        return code
+            utils.update(self.root, self.input_data[i], first_appearance)
+        utils.add_padding(code)
+        byte_array = utils.convert_to_bytes(code)
+        utils.write_to_file(byte_array)
+
+
