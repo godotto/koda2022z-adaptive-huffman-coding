@@ -137,7 +137,7 @@ def update_children_depth(root: Node):
         update_children_depth(root.left)
 
     if root.right:
-        root.right.depth += root.depth + 1
+        root.right.depth = root.depth + 1
         update_children_depth(root.right)
 
     return
