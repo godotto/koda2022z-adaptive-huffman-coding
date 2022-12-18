@@ -30,7 +30,8 @@ def print_code(root: Node, symbol):
             # returns code and false if it is not a new symbol on a tree
             return (current_node.code, False)
         if current_node.symbol == NYT:
-            code_for_new_symbol = current_node.code
+            code_for_new_symbol = current_node.code + '1'
+            return (code_for_new_symbol, True)
         if current_node.left:
             current_node.left.code = current_node.code + '0'
             nodes_to_check.append(current_node.left)
