@@ -51,11 +51,11 @@ def update(root: Node, symbol, first_apperance):
             current_node = find_node_symbol(root, NYT)
 
             # Add new symbol to the right of current node
-            current_node.right = Node(1, symbol)
+            current_node.right = Node(1, current_node.depth + 1, symbol)
             current_node.right.parent = current_node
 
             # Set let node to NYT
-            current_node.left = Node(0, NYT)
+            current_node.left = Node(0, current_node.depth + 1, NYT)
             current_node.left.parent = current_node
 
             # Update current node
@@ -66,9 +66,11 @@ def update(root: Node, symbol, first_apperance):
                 current_node = find_node_symbol(root, symbol)
             # find node that has the same weight and is not current node or its child
             node_to_replace = find_node_to_swap(root, current_node)
-            if node_to_replace:
+            if node_to_replace and node_to_replace is not current_node.parent:
                 switch_nodes(current_node, node_to_replace)
                 current_node = node_to_replace
+                current_node.depth = current_node.parent.depth + 1
+                update_children_depth(current_node)
 
             current_node.weight += 1
 
@@ -98,23 +100,47 @@ def find_node_symbol(root: Node, symbol) -> Node:
 
 
 def find_node_to_swap(root: Node, node_to_swap: Node) -> Node:
+    candidate = None
     if root.weight == node_to_swap.weight:
-        if root is node_to_swap or root is node_to_swap.parent:
+        if root is node_to_swap or root.depth > node_to_swap.depth:
             return None
+        elif root.depth < node_to_swap.depth:
+            candidate = root
         else:
             return root
 
     if root.left:
         node = find_node_to_swap(root.left, node_to_swap)
         if node:
-            return node
+            if node.depth == node_to_swap.depth:
+                return node
+            else:
+                candidate = node
 
     if root.right:
         node = find_node_to_swap(root.right, node_to_swap)
         if node:
-            return node
+            if node.depth == node_to_swap.depth:
+                return node
+            else:
+                candidate = node
 
-    return None
+    if candidate:
+        candidate = node_to_swap.parent if node_to_swap.parent.depth == candidate.depth else candidate
+
+    return candidate
+
+
+def update_children_depth(root: Node):
+    if root.left:
+        root.left.depth = root.depth + 1
+        update_children_depth(root.left)
+
+    if root.right:
+        root.right.depth += root.depth + 1
+        update_children_depth(root.right)
+
+    return
 
 
 def add_padding(code: str):

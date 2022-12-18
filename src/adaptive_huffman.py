@@ -12,7 +12,7 @@ class AdaptiveHuffmanEncoderDecoder:
         self.e = alphabet_size.bit_length() - 1
         self.r = alphabet_size - 2 ** self.e
 
-        self.root = node.Node(0, NYT)
+        self.root = node.Node(0, 0, NYT)
 
     def encode(self, input_data: bytearray):
         code = ""
