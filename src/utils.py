@@ -66,7 +66,7 @@ def update(root: Node, symbol, first_apperance):
                 current_node = find_node_symbol(root, symbol)
             # find node that has the same weight and is not current node or its child
             node_to_replace = find_node_to_swap(root, current_node)
-            if node_to_replace is not current_node.parent:
+            if node_to_replace:
                 switch_nodes(current_node, node_to_replace)
                 current_node = node_to_replace
 
@@ -99,7 +99,7 @@ def find_node_symbol(root: Node, symbol) -> Node:
 
 def find_node_to_swap(root: Node, node_to_swap: Node) -> Node:
     if root.weight == node_to_swap.weight:
-        if root is node_to_swap or root.parent is node_to_swap:
+        if root is node_to_swap or root is node_to_swap.parent:
             return None
         else:
             return root
