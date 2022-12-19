@@ -12,11 +12,21 @@ def switch_nodes(left_node: Node, right_node: Node):
     # switch references to the right node
     left_node.right, right_node.right = right_node.right, left_node.right
 
-    # switch references to the parent node (if needed)
-    left_node.parent, right_node.parent = right_node.parent, left_node.parent
-
     # switch contained symbols
-    left_node.symbol, right_node.symbol = left_node.symbol, right_node.symbol
+    left_node.symbol, right_node.symbol = right_node.symbol, left_node.symbol
+
+    # update info about parents
+    if left_node.left is not None:
+        left_node.left.parent = left_node
+
+    if left_node.right is not None:
+        left_node.right.parent = left_node
+
+    if right_node.left is not None:
+        right_node.left.parent = right_node
+
+    if right_node.right is not None:
+        right_node.right.parent = right_node
 
 
 def print_code(root: Node, symbol):
@@ -43,45 +53,6 @@ def print_code(root: Node, symbol):
     return (current_node.code, True)
 
 
-def update(root: Node, symbol, first_apperance):
-    current_node: Node = None
-    counter = 0
-    while True:
-        if first_apperance:
-            current_node = find_node_symbol(root, NYT)
-
-            # Add new symbol to the right of current node
-            current_node.right = Node(1, current_node.depth + 1, symbol)
-            current_node.right.parent = current_node
-
-            # Set let node to NYT
-            current_node.left = Node(0, current_node.depth + 1, NYT)
-            current_node.left.parent = current_node
-
-            # Update current node
-            current_node.weight += 1
-            current_node.symbol = ""
-        else:
-            if not current_node:
-                current_node = find_node_symbol(root, symbol)
-            # find node that has the same weight and is not current node or its child
-            node_to_replace = find_node_to_swap(root, current_node)
-            if node_to_replace and node_to_replace is not current_node.parent:
-                switch_nodes(current_node, node_to_replace)
-                current_node = node_to_replace
-                current_node.depth = current_node.parent.depth + 1
-                update_children_depth(current_node)
-
-            current_node.weight += 1
-
-        if not current_node.parent:
-            break
-        current_node = current_node.parent
-        first_apperance = False
-        counter += 1
-        # print(str(counter) + " ")
-
-
 def find_node_symbol(root: Node, symbol) -> Node:
     if root.symbol == symbol:
         return root
@@ -97,50 +68,6 @@ def find_node_symbol(root: Node, symbol) -> Node:
             return node
 
     return None
-
-
-def find_node_to_swap(root: Node, node_to_swap: Node) -> Node:
-    candidate = None
-    if root.weight == node_to_swap.weight:
-        if root is node_to_swap or root.depth > node_to_swap.depth:
-            return None
-        elif root.depth < node_to_swap.depth:
-            candidate = root
-        else:
-            return root
-
-    if root.left:
-        node = find_node_to_swap(root.left, node_to_swap)
-        if node:
-            if node.depth == node_to_swap.depth:
-                return node
-            else:
-                candidate = node
-
-    if root.right:
-        node = find_node_to_swap(root.right, node_to_swap)
-        if node:
-            if node.depth == node_to_swap.depth:
-                return node
-            else:
-                candidate = node
-
-    if candidate:
-        candidate = node_to_swap.parent if node_to_swap.parent.depth == candidate.depth else candidate
-
-    return candidate
-
-
-def update_children_depth(root: Node):
-    if root.left:
-        root.left.depth = root.depth + 1
-        update_children_depth(root.left)
-
-    if root.right:
-        root.right.depth = root.depth + 1
-        update_children_depth(root.right)
-
-    return
 
 
 def add_padding(code: str):
@@ -169,3 +96,42 @@ def read_from_file(filename: str):
     with open(filename, "rb") as binary_file:
         byte_array = binary_file.read()
     return byte_array
+
+
+def update(root: Node, symbol, nodes_list):
+    current_node = find_node_symbol(root, symbol)
+
+    if current_node is None: # it means the first appearnace
+        current_node = find_node_symbol(root, NYT)
+
+        new_nyt = Node(0, NYT, current_node.number - 2, current_node)
+        new_external = Node(1, symbol, current_node.number - 1, current_node)
+        
+        nodes_list.append(new_nyt)
+        nodes_list.append(new_external)
+
+        current_node.left = new_nyt
+        current_node.right = new_external
+        current_node.symbol = None
+        current_node.weight += 1
+    else:
+        for node in nodes_list:
+            if node.weight == current_node.weight and node != current_node.parent and node.number > current_node.number:
+                switch_nodes(node, current_node)
+                node.weight += 1
+                current_node = node
+                break
+        else:
+            current_node.weight += 1
+
+    while current_node.parent != None:
+        current_node = current_node.parent
+
+        for node in nodes_list:
+            if node.weight == current_node.weight and node != current_node.parent and node.number > current_node.number:
+                switch_nodes(node, current_node)
+                node.weight += 1
+                current_node = node
+                break
+        else:
+            current_node.weight += 1

@@ -12,7 +12,9 @@ class AdaptiveHuffmanEncoderDecoder:
         self.e = alphabet_size.bit_length() - 1
         self.r = alphabet_size - 2 ** self.e
 
-        self.root = node.Node(0, 0, NYT)
+        self.root = node.Node(0, NYT, alphabet_size * 2 - 1)
+
+        self.nodes_list = [self.root]
 
     def encode(self, input_data: bytearray):
         code = ""
@@ -22,7 +24,7 @@ class AdaptiveHuffmanEncoderDecoder:
             print(chr(input_data[i]))
             print(symbol_code + " ")
             code += symbol_code
-            utils.update(self.root, input_data[i], first_appearance)
+            utils.update(self.root, input_data[i], self.nodes_list)
         utils.add_padding(code)
         byte_array = utils.convert_to_bytes(code)
         utils.write_to_file(byte_array)
