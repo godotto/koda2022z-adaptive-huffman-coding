@@ -6,8 +6,6 @@ import string
 NYT = "NYT"
 
 
-
-
 class AdaptiveHuffmanEncoderDecoder:
     def __init__(self, alphabet_size: int, alphabet):
         self.alphabet_size = alphabet_size
@@ -23,10 +21,10 @@ class AdaptiveHuffmanEncoderDecoder:
 
         # used alphabet
         self.alphabet = alphabet
-        # generating fixed code for used alphabet
 
+        # generating fixed code for used alphabet
         self.fixed_code = []
-        for i in range(len(self.alphabet)):
+        for i, _ in enumerate(self.alphabet):
             if 0 <= i <= 2 * self.r - 1:
                 bin_a = '{0:b}'.format(i)
                 bin_a = bin_a.zfill(self.e + 1)
@@ -37,13 +35,13 @@ class AdaptiveHuffmanEncoderDecoder:
 
     def encode(self, input_data: bytearray):
         code = ""
-        for i in range(len(input_data)):
+        for byte in input_data:
             symbol_code = utils.print_code_new(
-                self.root, input_data[i], self.fixed_code, self.alphabet)
-            print(chr(input_data[i]))
+                self.root, byte, self.fixed_code, self.alphabet)
+            print(chr(byte))
             print(symbol_code + " ")
             code += symbol_code
-            utils.update(self.root, input_data[i], self.nodes_list)
+            utils.update(self.root, byte, self.nodes_list)
         print(code)
         utils.add_padding(code)
         byte_array = utils.convert_to_bytes(code)

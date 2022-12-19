@@ -3,6 +3,8 @@ import numpy
 from node import Node
 
 NYT = "NYT"
+LEFT_CODE = '0'
+RIGHT_CODE = '1'
 
 
 def switch_nodes(left_node: Node, right_node: Node):
@@ -35,9 +37,9 @@ def print_code_new(root: Node, symbol, fixed_code, alphabet):
     if searched_node:
         while searched_node.parent:
             if searched_node == searched_node.parent.left:
-                code_of_symbol += '0'
+                code_of_symbol += LEFT_CODE
             else:
-                code_of_symbol += '1'
+                code_of_symbol += RIGHT_CODE
             searched_node = searched_node.parent
         code_of_symbol = code_of_symbol[slice(None, None, -1)]
 
