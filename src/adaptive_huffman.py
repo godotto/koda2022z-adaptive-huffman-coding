@@ -38,7 +38,7 @@ class AdaptiveHuffmanEncoderDecoder:
     def encode(self, input_data: bytearray):
         code = ""
         for i in range(len(input_data)):
-            symbol_code, first_appearance = utils.print_code(
+            symbol_code = utils.print_code_new(
                 self.root, input_data[i], self.fixed_code, self.alphabet)
             print(chr(input_data[i]))
             print(symbol_code + " ")

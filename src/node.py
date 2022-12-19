@@ -7,5 +7,3 @@ class Node:
         self.symbol = symbol
         self.weight = weight
         self.number = number
-
-        self.code = ""  # for printing purpose
