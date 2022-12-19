@@ -31,7 +31,7 @@ def switch_nodes(left_node: Node, right_node: Node):
         right_node.right.parent = right_node
 
 
-def print_code_new(root: Node, symbol, fixed_code, alphabet):
+def print_code(root: Node, symbol, fixed_code, alphabet):
     searched_node = find_node_symbol(root, symbol)
     code_of_symbol = ""
     if searched_node:
@@ -50,45 +50,6 @@ def print_code_new(root: Node, symbol, fixed_code, alphabet):
         index = alphabet.index(symbol_chr)
         code_for_new_symbol = code_of_symbol + fixed_code[index]
         return (code_for_new_symbol)
-
-
-def print_code(root: Node, symbol, fixed_code, alphabet):
-    nodes_to_check = [root]
-    code_for_new_symbol = ""
-    symbol_chr_searched = chr(symbol)
-    printed_node = find_node_symbol(root, symbol)
-
-    if printed_node:
-        printed_node_weight = printed_node.weight
-        printed_node_left = printed_node.left
-
-    while len(nodes_to_check) > 0:
-        current_node = nodes_to_check.pop()
-        current_node_weight = current_node.weight
-        # for debbuging
-        current_node_symbol = current_node.symbol
-        if current_node.symbol == symbol:
-            # returns code and false if it is not a new symbol on a tree
-            current_node_code = current_node.code
-            current_node.code = ""
-            return (current_node_code, False)
-        if current_node.symbol == NYT:
-            # code_for_new_symbol = current_node.code + '1'
-            symbol_chr = chr(symbol)
-            index = alphabet.index(symbol_chr)
-            code_for_new_symbol = current_node.code + fixed_code[index]
-            current_node.code = ""
-            return (code_for_new_symbol, True)
-        if current_node.left:
-            current_node.left.code = current_node.code + '0'
-            nodes_to_check.append(current_node.left)
-        if current_node.right:
-            current_node.right.code = current_node.code + '1'
-            nodes_to_check.append(current_node.right)
-
-    # for debbuging
-    current_node_code = current_node.code
-    # return (current_node.code, True)
 
 
 def find_node_symbol(root: Node, symbol) -> Node:
