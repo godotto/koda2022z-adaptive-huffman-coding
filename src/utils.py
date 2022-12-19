@@ -29,18 +29,31 @@ def switch_nodes(left_node: Node, right_node: Node):
         right_node.right.parent = right_node
 
 
-def print_code(root: Node, symbol):
+def print_code(root: Node, symbol, fixed_code, alphabet):
     nodes_to_check = [root]
     code_for_new_symbol = ""
 
+    # for debbuging
+    symbol_chr_searched = chr(symbol)
+    printed_node = find_node_symbol(root, symbol)
+    if printed_node:
+        printed_node_weight = printed_node.weight
+
     while len(nodes_to_check) > 0:
         current_node = nodes_to_check.pop()
+
+        # for debbuging
+        current_node_weight = current_node.weight
+        current_node_symbol = current_node.symbol
 
         if current_node.symbol == symbol:
             # returns code and false if it is not a new symbol on a tree
             return (current_node.code, False)
         if current_node.symbol == NYT:
-            code_for_new_symbol = current_node.code + '1'
+            #code for a new symbol from fixed list
+            symbol_chr = chr(symbol)
+            index = alphabet.index(symbol_chr)
+            code_for_new_symbol = current_node.code + fixed_code[index]
             return (code_for_new_symbol, True)
         if current_node.left:
             current_node.left.code = current_node.code + '0'
@@ -49,7 +62,7 @@ def print_code(root: Node, symbol):
             current_node.right.code = current_node.code + '1'
             nodes_to_check.append(current_node.right)
 
-    # returns code for a new symbok and true if it is a new symbol on a tree
+
     return (current_node.code, True)
 
 
@@ -101,12 +114,12 @@ def read_from_file(filename: str):
 def update(root: Node, symbol, nodes_list):
     current_node = find_node_symbol(root, symbol)
 
-    if current_node is None: # it means the first appearnace
+    if current_node is None:  # it means the first appearnace
         current_node = find_node_symbol(root, NYT)
 
         new_nyt = Node(0, NYT, current_node.number - 2, current_node)
         new_external = Node(1, symbol, current_node.number - 1, current_node)
-        
+
         nodes_list.append(new_nyt)
         nodes_list.append(new_external)
 
