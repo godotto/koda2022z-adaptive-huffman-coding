@@ -41,12 +41,16 @@ class AdaptiveHuffmanEncoderDecoder:
             print(symbol_code + " ")
             code += symbol_code
             utils.update(self.root, byte, self.nodes_list)
+        print('Endcoded sequence - write to binary file')
         print(code)
-        utils.add_padding(code)
         byte_array = utils.convert_to_bytes(code)
         utils.write_to_file(byte_array)
+        return code
 
-    def decode(self, input: str):
+    def decode(self, filename: str):
+        input = utils.read_from_binary_file(filename)
+        print('Encoded sequence - read from binary file')
+        print(input)
         i = 0  # current bit from the string
         bits = ""  # current bits input
         decoded = ""  # decoded sequence

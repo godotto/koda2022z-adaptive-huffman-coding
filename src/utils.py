@@ -1,5 +1,5 @@
 import numpy
-
+from bitstring import BitArray
 from node import Node
 
 NYT = "NYT"
@@ -69,18 +69,15 @@ def find_node_symbol(root: Node, symbol) -> Node:
     return None
 
 
-def add_padding(code: str):
-    padding_len = 8 - len(code) % 8
-    zeros = numpy.zeros(padding_len, dtype=int)
-    zero_s = numpy.array2string(zeros)
-    code += zero_s
-    code = str(padding_len) + code
-
-
 def convert_to_bytes(code: str):
+
+    padding_len = 8 - len(code) % 8
+    pad_l_b = '{0:b}'.format(padding_len)
+    pad_l_b = pad_l_b.zfill(8)
+    code = pad_l_b + code.ljust(padding_len + len(code), '0')
     byte_array = bytearray()
     for i in range(0, len(code), 8):
-        byte = code[1:1 + 8]
+        byte = code[i:i + 8]
         byte_array.append(int(byte, 2))
     return byte_array
 
@@ -96,6 +93,14 @@ def read_from_file(filename: str):
         byte_array = binary_file.read()
     return byte_array
 
+def read_from_binary_file(filename: str):
+    with open(filename, mode="rb") as txt_file:
+        contents = txt_file.read()
+    a = BitArray(bytes=contents)
+    raw_bin_string = a.bin
+    how_many_pads = int(raw_bin_string[0:8], 2)
+    original_code = raw_bin_string[8:-how_many_pads]
+    return original_code
 
 def update(root: Node, symbol, nodes_list):
     current_node = find_node_symbol(root, symbol)
