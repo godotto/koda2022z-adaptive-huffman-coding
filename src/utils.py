@@ -46,8 +46,8 @@ def print_code(root: Node, symbol, fixed_code, alphabet):
         return (code_of_symbol)
     else:
         code_of_symbol = print_code(root, NYT, fixed_code, alphabet)
-        symbol_chr = chr(symbol)
-        index = alphabet.index(symbol_chr)
+        #symbol_chr = chr(symbol)
+        index = alphabet.index(symbol)
         code_for_new_symbol = code_of_symbol + fixed_code[index]
         return (code_for_new_symbol)
 

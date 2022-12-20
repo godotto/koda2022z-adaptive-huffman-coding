@@ -4,11 +4,13 @@ import string
 
 ##encoding
 bytes = utils.read_from_file("test1.txt")
-alphabet = list(string.ascii_lowercase)
+alphabet = string.ascii_lowercase
+alphabet = [ord(a) for a in alphabet]
 coder = adaptive_huffman.AdaptiveHuffmanEncoderDecoder(len(alphabet), alphabet)
 code = coder.encode(bytes)
 
-#decoding
-binary_file = "my_binary_file.bin"
-coder.decode(binary_file) #?
+##decoding
+# decoder = adaptive_huffman.AdaptiveHuffmanEncoderDecoder(len(alphabet), alphabet)
+# binary_file = "my_binary_file.bin"
+# decoder.decode(binary_file) #?
 

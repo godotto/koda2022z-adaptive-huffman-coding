@@ -37,7 +37,7 @@ class AdaptiveHuffmanEncoderDecoder:
         for byte in input_data:
             symbol_code = utils.print_code(
                 self.root, byte, self.fixed_code, self.alphabet)
-            print(chr(byte))
+            print(chr(byte)) #for viewing, only when characters are encoded, otherwise comment
             print(symbol_code + " ")
             code += symbol_code
             utils.update(self.root, byte, self.nodes_list)
@@ -47,7 +47,10 @@ class AdaptiveHuffmanEncoderDecoder:
         utils.write_to_file(byte_array)
         return code
 
-    def decode(self, input: str):
+    def decode(self, filename: str):
+        input = utils.read_from_binary_file(filename)
+        print('Encoded sequence - read form a binary file')
+        print(input)
         i = -1  # current bit from the string
         bits = ""  # current bits input
         decoded = ""  # decoded sequence
