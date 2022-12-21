@@ -82,8 +82,8 @@ def convert_to_bytes(code: str):
     return byte_array
 
 
-def write_to_file(byte_array: bytearray):
-    with open("my_binary_file.bin", "wb") as binary_file:
+def write_to_file(byte_array: bytearray, filename: str = "my_binary_file.bin"):
+    with open(filename, "wb") as binary_file:
         # Write bytes to file
         binary_file.write(byte_array)
 
