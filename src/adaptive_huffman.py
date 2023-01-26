@@ -37,12 +37,12 @@ class AdaptiveHuffmanEncoderDecoder:
         for byte in input_data:
             symbol_code = utils.print_code(
                 self.root, byte, self.fixed_code, self.alphabet)
-            print(chr(byte)) #for viewing, only when characters are encoded, otherwise comment
-            print(symbol_code + " ")
+            #print(chr(byte)) #for viewing, only when characters are encoded, otherwise comment
+            #print(symbol_code + " ")
             code += symbol_code
             utils.update(self.root, byte, self.nodes_list)
         print('Endcoded sequence - write to binary file')
-        print(code)
+        #print(code)
         byte_array = utils.convert_to_bytes(code)
         utils.write_to_file(byte_array)
         return code
@@ -50,10 +50,11 @@ class AdaptiveHuffmanEncoderDecoder:
     def decode(self, filename: str):
         input = utils.read_from_binary_file(filename)
         print('Encoded sequence - read form a binary file')
-        print(input)
+        #print(input)
         i = -1  # current bit from the string
         bits = ""  # current bits input
-        decoded = ""  # decoded sequence
+        decoded = bytearray()
+        #decoded = ""  # decoded sequence
         current_node = self.root  # begin with root
         while True:
             if current_node.symbol:
@@ -71,7 +72,8 @@ class AdaptiveHuffmanEncoderDecoder:
                 else:
                     letter = current_node.symbol
 
-                decoded += letter
+                #decoded += str(letter)
+                decoded.append(letter)
 
                 utils.update(self.root, letter, self.nodes_list)
                 current_node = self.root
@@ -86,4 +88,6 @@ class AdaptiveHuffmanEncoderDecoder:
                 current_node = current_node.right if int(
                     bit) else current_node.left
                 bits += bit
-        print(decoded)
+        #utils.write_to_file(decoded)
+        #print(decoded)
+        return decoded
