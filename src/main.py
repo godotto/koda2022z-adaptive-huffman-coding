@@ -16,5 +16,3 @@ pgm = True
 # encoding
 utils.adaptive_huff(input_file, encoded_filename, decoded_filename, pgm)
 utils.static_huff(input_file, encoded_file_static, decoded_filename_static, pgm)
-
-
