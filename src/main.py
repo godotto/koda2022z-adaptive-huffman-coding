@@ -1,3 +1,5 @@
+from dahuffman import HuffmanCodec
+
 import adaptive_huffman
 import utils
 import string
@@ -29,13 +31,11 @@ input_filename = "test.bin"
 output_filename = "test_decoded.txt"
 decoded = decoder.decode(input_filename, output_filename)
 
- ##saving decoded byte sequence to a pmg file
-with open("decoded_binary_file.pgm", "wb") as bin_file:
-    # Write bytes to file
-    bin_file.write(bytearray(pgmf_prefix))
-    bin_file.close()
 
-with open("decoded_binary_file.pgm", "ab") as bin_file:
-    # Write bytes to file
-    bin_file.write(decoded)
-    bin_file.close()
+# static Huffman
+codec = HuffmanCodec.from_data(input_bytes)
+static_code = codec.encode(input_bytes)
+print(f"Static length {len(static_code)}")
+
+decoded_static = codec.decode(static_code)
+print(decoded_static)
