@@ -146,14 +146,29 @@ def update(root: Node, symbol, nodes_list):
 
 
 def read_pgm_file(file_to_encode: str):
+
     pgmf = read_from_file(file_to_encode)
-    last_index = pgmf.rfind(b'\n')
-    pgmf_prefix = pgmf[:last_index + 1]
-    pgmf = pgmf[last_index + 1:]
+    pgmf_base = pgmf[:70]
+    hash_index = pgmf_base.find(b'#')
+    print(hash_index)
+    if hash_index != -1:
+        newlines = 4
+    else:
+        newlines = 3
+
+    m = 0
+    actual_nl_index = 0
+    while m < newlines:
+        actual_nl_index = pgmf.find(b'\n', actual_nl_index + 1)
+        m = m + 1
+
+    pgmf_headline = pgmf[:actual_nl_index + 1]
+    print(f'Headline {pgmf_headline}')
+    pgmf = pgmf[actual_nl_index + 1:]
     input_bytes = pgmf
     alphabet = list(range(0, 256))
 
-    return input_bytes, alphabet, pgmf_prefix
+    return input_bytes, alphabet, pgmf_headline
 
 
 def read_txt_file(file_to_encode: str):
@@ -178,9 +193,9 @@ def decode(alphabet, encoded_file: str):
     return decoded
 
 
-def write_decoded_to_pgm(pgmf_prefix: bytes, decoded: bytearray, decoded_file: str):
+def write_decoded_to_pgm(pgmf_headline: bytes, decoded: bytearray, decoded_file: str):
     with open(decoded_file, "wb") as bin_file:
-        bin_file.write(bytearray(pgmf_prefix))
+        bin_file.write(bytearray(pgmf_headline))
         bin_file.close()
 
     with open(decoded_file, "ab") as bin_file:
