@@ -1,4 +1,7 @@
+import string
+import adaptive_huffman
 import numpy
+from dahuffman import HuffmanCodec
 from bitstring import BitArray
 from node import Node
 
@@ -46,7 +49,7 @@ def print_code(root: Node, symbol, fixed_code, alphabet):
         return (code_of_symbol)
     else:
         code_of_symbol = print_code(root, NYT, fixed_code, alphabet)
-        #symbol_chr = chr(symbol)
+        # symbol_chr = chr(symbol)
         index = alphabet.index(symbol)
         code_for_new_symbol = code_of_symbol + fixed_code[index]
         return (code_for_new_symbol)
@@ -70,7 +73,6 @@ def find_node_symbol(root: Node, symbol) -> Node:
 
 
 def convert_to_bytes(code: str):
-
     padding_len = 8 - len(code) % 8
     pad_l_b = '{0:b}'.format(padding_len)
     pad_l_b = pad_l_b.zfill(8)
@@ -82,7 +84,7 @@ def convert_to_bytes(code: str):
     return byte_array
 
 
-def write_to_file(byte_array: bytearray, filename: str = "my_binary_file.bin"):
+def write_to_file(byte_array: bytearray, filename: str):
     with open(filename, "wb") as binary_file:
         # Write bytes to file
         binary_file.write(byte_array)
@@ -93,6 +95,7 @@ def read_from_file(filename: str):
         byte_array = binary_file.read()
     return byte_array
 
+
 def read_from_binary_file(filename: str):
     with open(filename, mode="rb") as txt_file:
         contents = txt_file.read()
@@ -101,6 +104,7 @@ def read_from_binary_file(filename: str):
     how_many_pads = int(raw_bin_string[0:8], 2)
     original_code = raw_bin_string[8:-how_many_pads]
     return original_code
+
 
 def update(root: Node, symbol, nodes_list):
     current_node = find_node_symbol(root, symbol)
@@ -139,3 +143,82 @@ def update(root: Node, symbol, nodes_list):
                 break
         else:
             current_node.weight += 1
+
+
+def read_pgm_file(file_to_encode: str):
+    pgmf = read_from_file(file_to_encode)
+    last_index = pgmf.rfind(b'\n')
+    pgmf_prefix = pgmf[:last_index + 1]
+    pgmf = pgmf[last_index + 1:]
+    input_bytes = pgmf
+    alphabet = list(range(0, 256))
+
+    return input_bytes, alphabet, pgmf_prefix
+
+
+def read_txt_file(file_to_encode: str):
+    input_filename = file_to_encode
+    input_bytes = read_from_file(input_filename)
+    alphabet = string.ascii_lowercase
+    alphabet = [ord(a) for a in alphabet]
+
+    return input_bytes, alphabet
+
+
+def encode(input_bytes: bytearray, alphabet, encoded_file: str):
+    coder = adaptive_huffman.AdaptiveHuffmanEncoderDecoder(alphabet)
+    code = coder.encode(input_bytes, encoded_file)
+    return code
+
+
+# decoding
+def decode(alphabet, encoded_file: str):
+    decoder = adaptive_huffman.AdaptiveHuffmanEncoderDecoder(alphabet)
+    decoded = decoder.decode(encoded_file)
+    return decoded
+
+
+def write_decoded_to_pgm(pgmf_prefix: bytes, decoded: bytearray, decoded_file: str):
+    with open(decoded_file, "wb") as bin_file:
+        bin_file.write(bytearray(pgmf_prefix))
+        bin_file.close()
+
+    with open(decoded_file, "ab") as bin_file:
+        bin_file.write(decoded)
+        bin_file.close()
+
+
+def write_decoded_to_txt(decoded: bytearray, decoded_file: str):
+    write_to_file(decoded, decoded_file)
+
+
+def adaptive_huff(input_filename: str, encoded_file: str, decoded_filename: str, pgm: bool = True):
+    if pgm == True:
+        input_bytes, alphabet, pgmf_prefix = read_pgm_file(input_filename)
+        encode(input_bytes, alphabet, encoded_file)
+        decoded = decode(alphabet, encoded_file)
+        write_decoded_to_pgm(pgmf_prefix, decoded, decoded_filename)
+    else:
+        input_bytes, alphabet = read_txt_file(input_filename)
+        encode(input_bytes, alphabet, encoded_file)
+        decoded = decode(alphabet, encoded_file)
+        write_decoded_to_txt(decoded, decoded_filename)
+
+
+def static_huff(input_filename: str, encoded_file: str, decoded_filename: str, if_pgm: bool = True):
+    if if_pgm == True:
+        input_bytes, alphabet, pgmf_prefix = read_pgm_file(input_filename)
+        codec = HuffmanCodec.from_data(input_bytes)
+        static_code = codec.encode(input_bytes)
+        write_to_file(static_code, encoded_file)
+        decoded_static = codec.decode(static_code)
+        write_decoded_to_pgm(pgmf_prefix, decoded_static, decoded_filename)
+    else:
+        input_bytes, alphabet = read_txt_file(input_filename)
+        codec = HuffmanCodec.from_data(input_bytes)
+        static_code = codec.encode(input_bytes)
+        write_to_file(static_code, encoded_file)
+        decoded_static = codec.decode(static_code)
+        write_decoded_to_txt(decoded_static, decoded_filename)
+
+    print(f"Static length {len(static_code) * 8}")

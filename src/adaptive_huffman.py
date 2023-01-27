@@ -7,13 +7,13 @@ NYT = "NYT"
 
 
 class AdaptiveHuffmanEncoderDecoder:
-    def __init__(self, alphabet_size: int, alphabet):
-        self.alphabet_size = alphabet_size
+    def __init__(self, alphabet):
+        self.alphabet_size = len(alphabet)
 
-        self.e = alphabet_size.bit_length() - 1
-        self.r = alphabet_size - 2 ** self.e
+        self.e = len(alphabet).bit_length() - 1
+        self.r = len(alphabet) - 2 ** self.e
 
-        self.root = node.Node(0, NYT, alphabet_size * 2 - 1)
+        self.root = node.Node(0, NYT, len(alphabet) * 2 - 1)
         self.nodes_list = [self.root]
         print("e: " + str(self.e))
         print("r: " + str(self.r))
@@ -44,11 +44,11 @@ class AdaptiveHuffmanEncoderDecoder:
         #print(code)
         byte_array = utils.convert_to_bytes(code)
         utils.write_to_file(byte_array, output_filename)
-        print(f'Count of bytes of original sequence {len(input_data)}')
-        print(f'Count of bytes of encoded sequence {len(byte_array)}')
+        print(f'Count of bytes of original sequence {len(input_data)*8}')
+        print(f'Count of bytes of encoded sequence {len(byte_array)*8}')
         return code
 
-    def decode(self, input_filename: str, output_filename: str):
+    def decode(self, input_filename: str):
         input = utils.read_from_binary_file(input_filename)
         print('Encoded sequence - read form a binary file')
         i = -1  # current bit from the string
@@ -86,5 +86,4 @@ class AdaptiveHuffmanEncoderDecoder:
                     bit) else current_node.left
                 bits += bit
         #print(decoded.decode("ascii"))
-        utils.write_to_file(decoded, output_filename)
         return(decoded)
