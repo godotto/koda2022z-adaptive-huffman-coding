@@ -1,9 +1,11 @@
 import string
-import adaptive_huffman
-import numpy
+
 from dahuffman import HuffmanCodec
 from bitstring import BitArray
+
+import adaptive_huffman
 from node import Node
+import test_utils
 
 NYT = "NYT"
 LEFT_CODE = '0'
@@ -49,7 +51,6 @@ def print_code(root: Node, symbol, fixed_code, alphabet):
         return (code_of_symbol)
     else:
         code_of_symbol = print_code(root, NYT, fixed_code, alphabet)
-        # symbol_chr = chr(symbol)
         index = alphabet.index(symbol)
         code_for_new_symbol = code_of_symbol + fixed_code[index]
         return (code_for_new_symbol)
@@ -150,7 +151,6 @@ def read_pgm_file(file_to_encode: str):
     pgmf = read_from_file(file_to_encode)
     pgmf_base = pgmf[:70]
     hash_index = pgmf_base.find(b'#')
-    print(hash_index)
     if hash_index != -1:
         newlines = 4
     else:
@@ -163,7 +163,6 @@ def read_pgm_file(file_to_encode: str):
         m = m + 1
 
     pgmf_headline = pgmf[:actual_nl_index + 1]
-    print(f'Headline {pgmf_headline}')
     pgmf = pgmf[actual_nl_index + 1:]
     input_bytes = pgmf
     alphabet = list(range(0, 256))
@@ -183,7 +182,7 @@ def read_txt_file(file_to_encode: str):
 def encode(input_bytes: bytearray, alphabet, encoded_file: str):
     coder = adaptive_huffman.AdaptiveHuffmanEncoderDecoder(alphabet)
     code = coder.encode(input_bytes, encoded_file)
-    return code
+    return code, coder
 
 
 # decoding
@@ -210,8 +209,19 @@ def write_decoded_to_txt(decoded: bytearray, decoded_file: str):
 def adaptive_huff(input_filename: str, encoded_file: str, decoded_filename: str, pgm: bool = True):
     if pgm == True:
         input_bytes, alphabet, pgmf_prefix = read_pgm_file(input_filename)
-        encode(input_bytes, alphabet, encoded_file)
+
+        print("####### HISTOGRAM AND ENTROPY GENERATION START #######")
+        test_utils.generate_histogram(input_bytes, "histogram.png")
+        print(f"Input data entropy: {test_utils.input_data_entropy(input_bytes)}")
+        print("####### HISTOGRAM AND ENTROPY GENERATION END #######\n")
+
+        print("####### ADAPTIVE ENCODING START #######")
+        code, coder = encode(input_bytes, alphabet, encoded_file)
+        print(f"Average bit lenght: {test_utils.average_bit_lenght(coder, input_bytes, code)}")
+        print("####### ADAPTIVE ENCODING END #######\n")
+        print("####### ADAPTIVE DECODING START #######")
         decoded = decode(alphabet, encoded_file)
+        print("####### ADAPTIVE DECODING END #######\n")
         write_decoded_to_pgm(pgmf_prefix, decoded, decoded_filename)
     else:
         input_bytes, alphabet = read_txt_file(input_filename)
@@ -222,18 +232,22 @@ def adaptive_huff(input_filename: str, encoded_file: str, decoded_filename: str,
 
 def static_huff(input_filename: str, encoded_file: str, decoded_filename: str, if_pgm: bool = True):
     if if_pgm == True:
-        input_bytes, alphabet, pgmf_prefix = read_pgm_file(input_filename)
+        input_bytes, _, pgmf_prefix = read_pgm_file(input_filename)
+        print("####### STATIC ENCODING START #######")
         codec = HuffmanCodec.from_data(input_bytes)
         static_code = codec.encode(input_bytes)
+        print(f"Number of bytes of sequence encoded with static Huffman coder: {len(static_code) * 8}")
+        print(f"Average bit lenght: {test_utils.average_bit_lenght(codec, input_bytes, static_code)}")
+        print("####### STATIC ENCODING END #######\n")
         write_to_file(static_code, encoded_file)
+        print("####### STATIC DECODING START #######")
         decoded_static = codec.decode(static_code)
+        print("####### STATIC DECODING END #######\n")
         write_decoded_to_pgm(pgmf_prefix, decoded_static, decoded_filename)
     else:
-        input_bytes, alphabet = read_txt_file(input_filename)
+        input_bytes, _ = read_txt_file(input_filename)
         codec = HuffmanCodec.from_data(input_bytes)
         static_code = codec.encode(input_bytes)
         write_to_file(static_code, encoded_file)
         decoded_static = codec.decode(static_code)
         write_decoded_to_txt(decoded_static, decoded_filename)
-
-    print(f"Static length {len(static_code) * 8}")
