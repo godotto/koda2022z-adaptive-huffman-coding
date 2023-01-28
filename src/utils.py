@@ -73,10 +73,13 @@ def find_node_symbol(root: Node, symbol) -> Node:
 
 
 def convert_to_bytes(code: str):
-    padding_len = 8 - len(code) % 8
-    pad_l_b = '{0:b}'.format(padding_len)
-    pad_l_b = pad_l_b.zfill(8)
-    code = pad_l_b + code.ljust(padding_len + len(code), '0')
+    code_len = len(code)
+    padding_len = 8 - code_len % 8
+    pad_l_bite = '{0:b}'.format(padding_len)
+    pad_l_byte = pad_l_bite.zfill(8)
+    zeros_fill = code.ljust(padding_len + len(code), '0')
+    code = pad_l_byte + zeros_fill
+    code_new_len = len(code)
     byte_array = bytearray()
     for i in range(0, len(code), 8):
         byte = code[i:i + 8]
@@ -148,34 +151,8 @@ def update(root: Node, symbol, nodes_list):
 def read_pgm_file(file_to_encode: str):
 
     pgmf = read_from_file(file_to_encode)
-    pgmf_base = pgmf[:70]
-    hash_index = pgmf_base.find(b'#')
-    print(hash_index)
-    if hash_index != -1:
-        newlines = 4
-    else:
-        newlines = 3
-
-    m = 0
-    actual_nl_index = 0
-    while m < newlines:
-        actual_nl_index = pgmf.find(b'\n', actual_nl_index + 1)
-        m = m + 1
-
-    pgmf_headline = pgmf[:actual_nl_index + 1]
-    print(f'Headline {pgmf_headline}')
-    pgmf = pgmf[actual_nl_index + 1:]
     input_bytes = pgmf
-    alphabet = list(range(0, 256))
-
-    return input_bytes, alphabet, pgmf_headline
-
-
-def read_txt_file(file_to_encode: str):
-    input_filename = file_to_encode
-    input_bytes = read_from_file(input_filename)
-    alphabet = string.ascii_lowercase
-    alphabet = [ord(a) for a in alphabet]
+    alphabet = list(range(256))
 
     return input_bytes, alphabet
 
@@ -193,47 +170,26 @@ def decode(alphabet, encoded_file: str):
     return decoded
 
 
-def write_decoded_to_pgm(pgmf_headline: bytes, decoded: bytearray, decoded_file: str):
+def write_decoded_to_pgm(decoded: bytearray, decoded_file: str):
     with open(decoded_file, "wb") as bin_file:
-        bin_file.write(bytearray(pgmf_headline))
-        bin_file.close()
-
-    with open(decoded_file, "ab") as bin_file:
         bin_file.write(decoded)
         bin_file.close()
 
 
-def write_decoded_to_txt(decoded: bytearray, decoded_file: str):
-    write_to_file(decoded, decoded_file)
-
-
-def adaptive_huff(input_filename: str, encoded_file: str, decoded_filename: str, pgm: bool = True):
-    if pgm == True:
-        input_bytes, alphabet, pgmf_prefix = read_pgm_file(input_filename)
+def adaptive_huff(input_filename: str, encoded_file: str, decoded_filename: str):
+        input_bytes, alphabet = read_pgm_file(input_filename)
         encode(input_bytes, alphabet, encoded_file)
         decoded = decode(alphabet, encoded_file)
-        write_decoded_to_pgm(pgmf_prefix, decoded, decoded_filename)
-    else:
-        input_bytes, alphabet = read_txt_file(input_filename)
-        encode(input_bytes, alphabet, encoded_file)
-        decoded = decode(alphabet, encoded_file)
-        write_decoded_to_txt(decoded, decoded_filename)
+        write_decoded_to_pgm(decoded, decoded_filename)
 
 
-def static_huff(input_filename: str, encoded_file: str, decoded_filename: str, if_pgm: bool = True):
-    if if_pgm == True:
-        input_bytes, alphabet, pgmf_prefix = read_pgm_file(input_filename)
-        codec = HuffmanCodec.from_data(input_bytes)
-        static_code = codec.encode(input_bytes)
-        write_to_file(static_code, encoded_file)
-        decoded_static = codec.decode(static_code)
-        write_decoded_to_pgm(pgmf_prefix, decoded_static, decoded_filename)
-    else:
-        input_bytes, alphabet = read_txt_file(input_filename)
-        codec = HuffmanCodec.from_data(input_bytes)
-        static_code = codec.encode(input_bytes)
-        write_to_file(static_code, encoded_file)
-        decoded_static = codec.decode(static_code)
-        write_decoded_to_txt(decoded_static, decoded_filename)
+def static_huff(input_filename: str, encoded_file: str, decoded_filename: str):
+    input_bytes, alphabet = read_pgm_file(input_filename)
+    codec = HuffmanCodec.from_data(input_bytes)
+    static_code = codec.encode(input_bytes)
+    write_to_file(static_code, encoded_file)
+    decoded_static = codec.decode(static_code)
+    write_decoded_to_pgm(decoded_static, decoded_filename)
+
 
     print(f"Static length {len(static_code) * 8}")

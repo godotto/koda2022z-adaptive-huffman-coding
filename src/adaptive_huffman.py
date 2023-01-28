@@ -55,7 +55,9 @@ class AdaptiveHuffmanEncoderDecoder:
         bits = ""  # current bits input
         decoded = bytearray(b"")  # decoded sequence
         current_node = self.root  # begin with root
+        counter = 0
         while True:
+
             if current_node.symbol:
                 if current_node.symbol == NYT:
                     i += 1
@@ -71,6 +73,8 @@ class AdaptiveHuffmanEncoderDecoder:
                     decoded_symbol = current_node.symbol
 
                 decoded.append(decoded_symbol)
+                counter = counter + 1
+                #print(f' {counter}')
 
                 utils.update(self.root, decoded_symbol, self.nodes_list)
                 current_node = self.root
