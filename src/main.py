@@ -1,18 +1,23 @@
-import adaptive_huffman
 import utils
-import string
+from os import getcwd
 
-input_file = "src/geometr_05.pgm" #file to be encoded
-encoded_filename = "src/test_adaptive.bin"
-decoded_filename = "src/adaptive_decoded.pgm"
+print(getcwd())
 
-encoded_file_static = "src/test_static.bin"
-decoded_filename_static = "src/static_decoded.pgm"
+IMAGE_FILES_DIR = "../test_data/images/"
+DISTRIBUTION_FILES_DIR = "../test_data/distributions/"
+TEST_RESULTS_DIR = "../test_results/"
 
-histogram_filename = "histogram.png"
+input_file = IMAGE_FILES_DIR + "barbara.pgm"  # file to be encoded
+encoded_filename = TEST_RESULTS_DIR + "test_adaptive.bin"
+decoded_filename = TEST_RESULTS_DIR + "adaptive_decoded.pgm"
+
+encoded_file_static = TEST_RESULTS_DIR + "test_static.bin"
+decoded_filename_static = TEST_RESULTS_DIR + "static_decoded.pgm"
+
+histogram_filename = TEST_RESULTS_DIR + "histogram.png"
 
 pgm = True
 
 # encoding
-utils.adaptive_huff(input_file, encoded_filename, decoded_filename, pgm)
+utils.adaptive_huff(input_file, encoded_filename, decoded_filename, histogram_filename, pgm)
 utils.static_huff(input_file, encoded_file_static, decoded_filename_static, pgm)

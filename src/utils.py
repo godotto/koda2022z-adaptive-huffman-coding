@@ -206,18 +206,18 @@ def write_decoded_to_txt(decoded: bytearray, decoded_file: str):
     write_to_file(decoded, decoded_file)
 
 
-def adaptive_huff(input_filename: str, encoded_file: str, decoded_filename: str, pgm: bool = True):
+def adaptive_huff(input_filename: str, encoded_file: str, decoded_filename: str, histogram_filename: str, pgm: bool = True):
     if pgm == True:
         input_bytes, alphabet, pgmf_prefix = read_pgm_file(input_filename)
 
         print("####### HISTOGRAM AND ENTROPY GENERATION START #######")
-        test_utils.generate_histogram(input_bytes, "histogram.png")
+        test_utils.generate_histogram(input_bytes, histogram_filename)
         print(f"Input data entropy: {test_utils.input_data_entropy(input_bytes)}")
         print("####### HISTOGRAM AND ENTROPY GENERATION END #######\n")
 
         print("####### ADAPTIVE ENCODING START #######")
         code, coder = encode(input_bytes, alphabet, encoded_file)
-        print(f"Average bit lenght: {test_utils.average_bit_lenght(coder, input_bytes, code)}")
+        print(f"Average bit length: {test_utils.average_bit_length(coder, input_bytes, code)}")
         print("####### ADAPTIVE ENCODING END #######\n")
         print("####### ADAPTIVE DECODING START #######")
         decoded = decode(alphabet, encoded_file)
@@ -237,7 +237,7 @@ def static_huff(input_filename: str, encoded_file: str, decoded_filename: str, i
         codec = HuffmanCodec.from_data(input_bytes)
         static_code = codec.encode(input_bytes)
         print(f"Number of bytes of sequence encoded with static Huffman coder: {len(static_code) * 8}")
-        print(f"Average bit lenght: {test_utils.average_bit_lenght(codec, input_bytes, static_code)}")
+        print(f"Average bit length: {test_utils.average_bit_length(codec, input_bytes, static_code)}")
         print("####### STATIC ENCODING END #######\n")
         write_to_file(static_code, encoded_file)
         print("####### STATIC DECODING START #######")

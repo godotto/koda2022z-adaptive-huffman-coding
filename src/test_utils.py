@@ -23,7 +23,7 @@ def input_data_entropy(input_data: bytes) -> float:
     return entropy(list(probability_mass.values()), base=2)
 
 
-def average_bit_lenght(coder, input_data: bytes, encoded_data) -> float:
+def average_bit_length(coder, input_data: bytes, encoded_data) -> float:
     if isinstance(coder, HuffmanCodec):
         number_of_bits = 0
         for element in input_data:
