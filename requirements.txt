@@ -1,2 +1,4 @@
 bitstring
 dahuffman
+scipy
+matplotlib

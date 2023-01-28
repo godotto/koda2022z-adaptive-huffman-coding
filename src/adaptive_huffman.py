@@ -1,6 +1,5 @@
 import node
 import utils
-import string
 
 
 NYT = "NYT"
@@ -15,8 +14,9 @@ class AdaptiveHuffmanEncoderDecoder:
 
         self.root = node.Node(0, NYT, len(alphabet) * 2 - 1)
         self.nodes_list = [self.root]
-        print("e: " + str(self.e))
-        print("r: " + str(self.r))
+        print("Adaptive coder parameters:")
+        print(f"e: {self.e}")
+        print(f"r: {self.r}\n")
 
         # used alphabet
         self.alphabet = alphabet
@@ -35,27 +35,29 @@ class AdaptiveHuffmanEncoderDecoder:
 
     def encode(self, input_data: bytearray, output_filename: str):
         code = ""
+
         for byte in input_data:
             symbol_code = utils.print_code(
                 self.root, byte, self.fixed_code, self.alphabet)
             code += symbol_code
             utils.update(self.root, byte, self.nodes_list)
-        #print('Endcoded sequence - write to binary file')
-        #print(code)
+
         byte_array = utils.convert_to_bytes(code)
         utils.write_to_file(byte_array, output_filename)
-        print(f'Count of bytes of original sequence {len(input_data)*8}')
-        print(f'Count of bytes of encoded sequence {len(byte_array)*8}')
+
+        print(f'Number of bytes of original sequence {len(input_data)*8}')
+        print(f'Number of bytes of sequence encoded with adaptive Huffman coder {len(byte_array)*8}')
+
         return code
 
     def decode(self, input_filename: str):
         input = utils.read_from_binary_file(input_filename)
-        print('Encoded sequence - read form a binary file')
+
         i = -1  # current bit from the string
         bits = ""  # current bits input
         decoded = bytearray(b"")  # decoded sequence
         current_node = self.root  # begin with root
-        counter = 0
+
         while True:
 
             if current_node.symbol:
@@ -73,8 +75,6 @@ class AdaptiveHuffmanEncoderDecoder:
                     decoded_symbol = current_node.symbol
 
                 decoded.append(decoded_symbol)
-                counter = counter + 1
-                #print(f' {counter}')
 
                 utils.update(self.root, decoded_symbol, self.nodes_list)
                 current_node = self.root
@@ -89,5 +89,5 @@ class AdaptiveHuffmanEncoderDecoder:
                 current_node = current_node.right if int(
                     bit) else current_node.left
                 bits += bit
-        #print(decoded.decode("ascii"))
+
         return(decoded)
