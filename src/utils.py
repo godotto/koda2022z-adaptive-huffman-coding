@@ -185,7 +185,7 @@ def adaptive_huff(input_filename: str, encoded_file: str, decoded_filename: str)
 
 
 def static_huff(input_filename: str, encoded_file: str, decoded_filename: str):
-    input_bytes, alphabet = read_pgm_file(input_filename)
+    input_bytes, _ = read_pgm_file(input_filename)
     codec = HuffmanCodec.from_data(input_bytes)
     static_code = codec.encode(input_bytes)
     write_to_file(static_code, encoded_file)
